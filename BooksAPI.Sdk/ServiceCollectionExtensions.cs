@@ -14,7 +14,7 @@ namespace BooksAPI.Sdk
         public static IServiceCollection AddSdkServices(this IServiceCollection services, Action<Options> config)
         {
             services.Configure(config);
-            services.AddHttpClient("BooksAPIClient");
+            services.AddHttpClient();
             services.AddSingleton<HTTPHelper>();
             //services.AddSingleton<Options>(config);
             services.AddScoped<HttpBookService>();

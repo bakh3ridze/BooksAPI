@@ -17,7 +17,7 @@ namespace BooksAPI.Sdk
         private readonly IOptions<Options> _options;
         public HTTPHelper(IHttpClientFactory httpClientFactory, IOptions<Options> options)
         {
-            _httpClient = httpClientFactory.CreateClient("BooksAPIClient");
+            _httpClient = httpClientFactory.CreateClient();
             _options = options;
             _httpClient.BaseAddress = new Uri(options.Value.URL);
         }

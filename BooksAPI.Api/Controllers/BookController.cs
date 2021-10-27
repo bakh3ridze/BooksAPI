@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BooksAPI.Repository.BookRepositories;
+using BooksAPI.Service.Models;
 
 namespace BooksAPI.Api.Controllers
 {
@@ -33,7 +34,7 @@ namespace BooksAPI.Api.Controllers
             return Ok(await _repository.GetAll());
         }
 
-        [HttpGet("GetById/{Id}")]
+        [HttpGet("{Id}")]
         public async Task<ActionResult> GetById(int Id)
         {
             Book book = await _repository.GetById(Id);
@@ -46,29 +47,41 @@ namespace BooksAPI.Api.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult> Create(ModifyBookCommand command)
         {
-             await _bookService.CreateBook(command);
-             return Ok(command);
+            bool ifSuccessful = await _bookService.CreateBook(command);
+            if (ifSuccessful == true)
+                return Ok(command);
+            else
+                return StatusCode(500);
         }
 
         [HttpPut("Update/{Id}")]
         public async Task<ActionResult> Update(ModifyBookCommand command, int Id)
         {
-            await _bookService.UpdateBook(command, Id);
-            return Ok(command);
+            Book ifExists = await _bookRepository.GetById(Id);
+            if (ifExists == null)
+                return NotFound();
+            bool ifSuccessful = await _bookService.UpdateBook(command, Id);
+            if (ifSuccessful == true)
+                return Ok(command);
+            else
+                return StatusCode(500);
         }
 
         [HttpDelete("Delete/{Id}")]
         public async Task<ActionResult> Delete(int Id)
         {
+            Book ifExists = await _bookRepository.GetById(Id);
+            if (ifExists == null)
+                return NotFound();
             bool result = await _repository.Delete(Id);
             if (result == true)
                 return Ok();
-            return NotFound();
+            return StatusCode(500);
         }
         [HttpGet("Details/{Id}")]
         public async Task<ActionResult> Details(int Id)
         {
-            Details? details = await _bookRepository.Details(Id);
+            Details? details = await _bookService.Details(Id);
             if (details != null)
                 return Ok(details);
             else

@@ -18,7 +18,7 @@ namespace BooksAPI.Service.GenreService
             _repository = repository;
         }
 
-        public async Task CreateGenre(ModifyGenreCommand command)
+        public async Task<bool> CreateGenre(ModifyGenreCommand command)
         {
             ModifyGenreCommandalidator validator = new ModifyGenreCommandalidator();
             var result = await validator.ValidateAsync(command);
@@ -26,29 +26,30 @@ namespace BooksAPI.Service.GenreService
             {
                 throw new Exception("FluentValidationExeption");
             }
-            await _repository.Insert(
+            bool ifSuccesful = await _repository.Insert(
                 new Genre
                 {
                     Name = command.Name
                 }
                 );
+            return ifSuccesful;
         }
-        public async Task UpdateGenre(ModifyGenreCommand command, int Id)
+        public async Task<bool> UpdateGenre(ModifyGenreCommand command, int Id)
         {
             ModifyGenreCommandalidator validator = new ModifyGenreCommandalidator();
             var result = await validator.ValidateAsync(command);
-            Genre ifExists = await _repository.GetById(Id);
-            if (!result.IsValid && ifExists == null)
+            if (!result.IsValid)
             {
                 throw new Exception("FluentValidationExeption");
             }
-            await _repository.Update(
+            bool ifSuccesful = await _repository.Update(
                                 new Genre
                                 {
         Name = command.Name
                                 },
                                 Id
                 );
+            return ifSuccesful;
         }
     }
 }

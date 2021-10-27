@@ -1,6 +1,7 @@
 ﻿using BooksAPI.Data;
 using BooksAPI.Data.Base;
 using BooksAPI.Data.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -22,13 +23,8 @@ namespace BooksAPI.Repository.BaseRepositories
         public async Task<bool> Delete(int Id)
         {
             T? toDelete = await _entities.SingleOrDefaultAsync(x => x.Id == Id);
-            if (toDelete != null)
-            {
-                await Task.Run(() => _entities.Remove(toDelete));
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
+            await Task.Run(() => _entities.Remove(toDelete));
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<IEnumerable<T>> GetAll()
@@ -41,25 +37,17 @@ namespace BooksAPI.Repository.BaseRepositories
             return await _entities.SingleOrDefaultAsync(x => x.Id == Id);
         }
 
-        public async Task Insert(T toInsert)
+        public async Task<bool> Insert(T toInsert)
         {
-            if (toInsert != null)
-            {
-                await _entities.AddAsync(toInsert);
-                await _context.SaveChangesAsync();
-            }
+            await _entities.AddAsync(toInsert);
+            return await _context.SaveChangesAsync() > 0;           
         }
 
         public async Task<bool> Update(T toUpdate, int Id)
         {
             T? tmp = await _entities.SingleOrDefaultAsync(x => x.Id == Id);
-            if (tmp != null)
-            {
-                await Task.Run(() => _context.Entry(tmp).CurrentValues.SetValues(toUpdate));
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
+            await Task.Run(() => _context.Entry(tmp).CurrentValues.SetValues(toUpdate));
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

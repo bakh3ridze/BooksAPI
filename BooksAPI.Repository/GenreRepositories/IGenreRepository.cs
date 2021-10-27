@@ -6,9 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BooksAPI.Repository.BookRepositories
+namespace BooksAPI.Repository.GenreRepositories
 {
-    public interface IBookRepository : IRepository<Book>
+    public interface IGenreRepository : IRepository<Genre>
     {
+        
     }
 }

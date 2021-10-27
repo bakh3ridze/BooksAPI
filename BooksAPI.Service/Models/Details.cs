@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BooksAPI.Repository.BookRepositories
+namespace BooksAPI.Service.Models
 {
     public class Details
     {

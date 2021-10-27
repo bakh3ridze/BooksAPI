@@ -11,7 +11,7 @@ namespace BooksAPI.Repository.BaseRepositories
     {
         Task<IEnumerable<T>> GetAll();
         Task<T> GetById(int Id);
-        Task Insert(T toInsert);
+        Task<bool> Insert(T toInsert);
         Task<bool> Delete(int Id);
         Task<bool> Update(T toUpdate, int Id);
     }

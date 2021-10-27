@@ -6,6 +6,7 @@ using BooksAPI.Sdk.Book;
 using BooksAPI.Service.GenreService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 //var serviceProvider = new ServiceCollection()
 //    .AddSingleton(typeof(IRepository<>), typeof(Repository<>))
@@ -19,17 +20,16 @@ using Microsoft.Extensions.DependencyInjection;
 //Console.WriteLine(book.Title + " " + book.Price);
 
 var services = new ServiceCollection()
-    .AddSdkServices(o =>    
-        o.URL = "https://localhost:7064/"
-    );
+    .AddSdkServices(x => { x.URL = "https://localhost:7064/"; });
 
-var buildserviceprovider = services.BuildServiceProvider();
-var bookService = buildserviceprovider.GetService<HttpBookService>();
-var Books = await bookService.List();
+var buildServiceProvider = services.BuildServiceProvider();
 
+var bookService = buildServiceProvider.GetService<HttpBookService>();
 
-foreach (var item in Books)
+List<Book> books = (List<Book>)await bookService.List();
+
+foreach (var item in books)
 {
-    Console.WriteLine(item.Title + item.Price + item.GenreId);
+    Console.WriteLine(item.Title + " " + item.GenreId + " " + item.Genre);
 }
 Console.ReadLine();

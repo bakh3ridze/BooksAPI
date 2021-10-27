@@ -1,6 +1,8 @@
 ﻿using BooksAPI.Data.Entities;
 using BooksAPI.Repository.BaseRepositories;
+using BooksAPI.Repository.BookRepositories;
 using BooksAPI.Service.BookService.Commands;
+using BooksAPI.Service.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +13,16 @@ namespace BooksAPI.Service.BookService
 {
     public class BookService
     {
-        private readonly IRepository<Book> _repository;
+        private readonly IRepository<Book> _bookRepository;
+        private readonly IRepository<Genre> _genreRepository;
 
-        public BookService(IRepository<Book> repository)
+        public BookService(IRepository<Book> bookrepository, IRepository<Genre> genreRepository)
         {
-            _repository = repository;
+            _bookRepository = bookrepository;
+            _genreRepository = genreRepository;
         }
 
-        public async Task CreateBook(ModifyBookCommand command)
+        public async Task<bool> CreateBook(ModifyBookCommand command)
         {
             CreateBookCommandValidator validator = new CreateBookCommandValidator();
             var result = await validator.ValidateAsync(command);
@@ -26,7 +30,7 @@ namespace BooksAPI.Service.BookService
             {
                 throw new Exception("FluentValidationExeption");
             }
-            await _repository.Insert(
+            bool ifSuccesful = await _bookRepository.Insert(
                 new Book
                 {
                     GenreId = command.GenreId,
@@ -36,18 +40,18 @@ namespace BooksAPI.Service.BookService
                     Title = command.Title
                 }
                 );
+            return ifSuccesful;
         }
 
-        public async Task UpdateBook(ModifyBookCommand command, int Id)
+        public async Task<bool> UpdateBook(ModifyBookCommand command, int Id)
         {
             CreateBookCommandValidator validator = new CreateBookCommandValidator();
             var result = await validator.ValidateAsync(command);
-            Book ifExists = await _repository.GetById(Id);
-            if (!result.IsValid && ifExists == null)
+            if (!result.IsValid)
             {
                 throw new Exception("FluentValidationExeption");
             }
-            await _repository.Update(
+            bool ifSuccesful = await _bookRepository.Update(
                                 new Book
                                 {
                                     GenreId = command.GenreId,
@@ -58,6 +62,24 @@ namespace BooksAPI.Service.BookService
                                 },
                                 Id
                 );
+            return ifSuccesful;
+        }
+
+        public async Task<Details> Details(int Id)
+        {
+            IEnumerable<Book> books = await _bookRepository.GetAll();
+            Book? book = await Task.Run(() => books.SingleOrDefault(x => x.Id == Id));
+            Genre? BookGenre = await _genreRepository.GetById(book.GenreId);
+            Details? details = new Details()
+            {
+                GenreId = book.GenreId,
+                GenreName = BookGenre.Name,
+                Price = book.Price,
+                IsDeleted = book.IsDeleted,
+                Title = book.Title,
+                PublishDate = book.PublishDate
+            };
+            return details;
         }
     }
 }
