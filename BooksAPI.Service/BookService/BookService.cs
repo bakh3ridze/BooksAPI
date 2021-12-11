@@ -65,12 +65,12 @@ namespace BooksAPI.Service.BookService
             return ifSuccesful;
         }
 
-        public async Task<Details> Details(int Id)
+        public async Task<BookDetails> Details(int Id)
         {
             IEnumerable<Book> books = await _bookRepository.GetAll();
             Book? book = await Task.Run(() => books.SingleOrDefault(x => x.Id == Id));
             Genre? BookGenre = await _genreRepository.GetById(book.GenreId);
-            Details? details = new Details()
+            BookDetails? details = new BookDetails()
             {
                 GenreId = book.GenreId,
                 GenreName = BookGenre.Name,

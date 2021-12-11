@@ -1,0 +1,43 @@
+﻿@page "/"
+@inject HttpClient Http
+@using BooksAPI.Data.Entities;
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in book_list)
+            {
+                <tr>
+                    <td>@forecast.PublishDate.ToShortDateString()</td>
+                    <td>@forecast.IsDeleted</td>
+                    <td>@forecast.Price</td>
+                    <td>@forecast.Title</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+@code{
+    private IEnumerable<Book>? book_list = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Http.BaseAddress = new Uri("https://localhost:7064");
+        book_list = await Http.GetFromJsonAsync<IEnumerable<Book>>("api/book/getall");
+    }
+}

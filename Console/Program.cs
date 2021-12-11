@@ -1,35 +1,11 @@
-﻿using BooksAPI.Data;
-using BooksAPI.Repository.BaseRepositories;
-using BooksAPI.Repository.BookRepositories;
-using BooksAPI.Sdk;
-using BooksAPI.Sdk.Book;
-using BooksAPI.Service.GenreService;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
+﻿// See https://aka.ms/new-console-template for more information
+using BooksAPI.Data;
+using BooksAPI.Data.Entities;
 
-//var serviceProvider = new ServiceCollection()
-//    .AddSingleton(typeof(IRepository<>), typeof(Repository<>))
-//    .AddSingleton(typeof(IBookRepository), typeof(BookRepository))
-//    .AddSingleton(typeof(BookService))
-//    .AddSingleton(typeof(GenreService));
-//serviceProvider.AddDbContext<BookContext>(options => options.UseSqlServer("Data Source=DESKTOP-B3Q553I;Initial Catalog=BooksDB;Integrated Security=True"));
-//var buildserviceprovider = serviceProvider.BuildServiceProvider();
-//var BookService = buildserviceprovider.GetService<IRepository<Book>>();
-//Book book = await BookService.GetById(5);
-//Console.WriteLine(book.Title + " " + book.Price);
+Console.WriteLine("Hello, World!");
 
-var services = new ServiceCollection()
-    .AddSdkServices(x => { x.URL = "https://localhost:7064/"; });
-
-var buildServiceProvider = services.BuildServiceProvider();
-
-var bookService = buildServiceProvider.GetService<HttpBookService>();
-
-List<Book> books = (List<Book>)await bookService.List();
-
-foreach (var item in books)
-{
-    Console.WriteLine(item.Title + " " + item.GenreId + " " + item.Genre);
-}
-Console.ReadLine();
+BookContext context = new BookContext();
+List<BookGenre> bookGenres = new List<BookGenre>() { new BookGenre() { BookId = 10 }, new BookGenre() { BookId = 11 }, new BookGenre() { BookId = 13 } };
+await context.Genres.AddAsync(new Genre() { Name = "axalia", Books = bookGenres });
+await context.SaveChangesAsync();
+Console.WriteLine("morcha");

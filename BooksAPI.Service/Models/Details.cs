@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BooksAPI.Service.Models
 {
-    public class Details
+    public class BookDetails
     {
         public string? Title { get; set; }
         public int GenreId { get; set; }

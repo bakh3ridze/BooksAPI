@@ -8,13 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BooksAPI.Repository\BooksAPI.Repository.csproj" />
-    <ProjectReference Include="..\BooksAPI.Sdk\BooksAPI.Sdk.csproj" />
-    <ProjectReference Include="..\BooksAPI.Service\BooksAPI.Service.csproj" />
+    <ProjectReference Include="..\BooksAPI.Data\BooksAPI.Data.csproj" />
   </ItemGroup>
 
 </Project>

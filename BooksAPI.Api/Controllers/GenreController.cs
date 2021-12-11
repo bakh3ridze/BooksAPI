@@ -1,9 +1,11 @@
-﻿using BooksAPI.Data.Entities;
-using BooksAPI.Repository.BaseRepositories;
-using BooksAPI.Service.GenreService;
-using BooksAPI.Service.GenreService.Commands;
+﻿using BooksAPI.Data;
+using BooksAPI.Data.Entities;
+using BooksAPI.Repository.BookRepository;
+using BooksAPI.Repository.GenreRepositories;
+using BooksAPI.Repository.GenreRepository.Commands;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BooksAPI.Api.Controllers
 {
@@ -11,13 +13,12 @@ namespace BooksAPI.Api.Controllers
     [Route("api/[controller]")]
     public class GenreController : Controller
     {
-        private readonly GenreService _bookService;
-        private readonly IRepository<Genre> _genreRepository;
-
-        public GenreController(GenreService bookService, IRepository<Genre> repository)
+        private readonly IGenreRepository _genreRepository;
+        private readonly IBookRepository _bookRepository;
+        public GenreController(IGenreRepository genreRepository, IBookRepository bookRepository)
         {
-            _bookService = bookService;
-            _genreRepository = repository;
+            _genreRepository = genreRepository;
+            _bookRepository = bookRepository;
         }
 
         [HttpGet("GetAll")]
@@ -36,27 +37,27 @@ namespace BooksAPI.Api.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ActionResult> Create(ModifyGenreCommand command)
+        public async Task<ActionResult> Create(CreateGenreCommand command)
         {
-            bool ifSuccessful = await _bookService.CreateGenre(command);
+            bool ifSuccessful = await _genreRepository.Create(command);
             if (ifSuccessful != true)
                 return StatusCode(500);
             return Ok(command);
         }
 
         [HttpPut("Update")]
-        public async Task<ActionResult> Update(ModifyGenreCommand command, int Id)
+        public async Task<ActionResult> Update(UpdateGenreCommand command, int Id)
         {
             Genre genre = await _genreRepository.GetById(Id);
             if (genre == null)
                 return NotFound();
-            bool ifSuccessful = await _bookService.UpdateGenre(command, Id);
+            bool ifSuccessful = await _genreRepository.Update(command, Id);
             if (ifSuccessful != true)
                 return StatusCode(500);
             return Ok(command);
         }
 
-        [HttpDelete("Delete")]
+        [HttpDelete("Delete/{Id}")]
         public async Task<ActionResult> Delete(int Id)
         {
             Genre genre = await _genreRepository.GetById(Id);
@@ -65,6 +66,27 @@ namespace BooksAPI.Api.Controllers
             bool ifSuccessful = await _genreRepository.Delete(Id);
             if (ifSuccessful != true)
                 return StatusCode(500);
+            return Ok();
+        }
+
+        [HttpGet("GetGenresByBookId/{Id}")]
+        public async Task<ActionResult> GetGenresByBookId(int Id)
+        {
+            Book? genre = await _bookRepository.GetById(Id);
+            if (genre == null)
+                return NotFound();
+            return Ok(await _genreRepository.GetGenresByBookId(Id));
+        }
+
+        [HttpPost("AddGenresByBookId")]
+        public async Task<ActionResult> AddGenresByBookId(int Id, IEnumerable<int>? Ids)
+        {
+            Book? genre = await _bookRepository.GetById(Id);
+            if (genre == null)
+                return NotFound();
+
+            await _genreRepository.AddGenresByBookId(Id, Ids);
+
             return Ok();
         }
     }

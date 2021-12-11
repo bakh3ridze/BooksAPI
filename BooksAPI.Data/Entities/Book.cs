@@ -9,16 +9,13 @@ using System.Threading.Tasks;
 
 namespace BooksAPI.Data.Entities
 {
+    [Table(name: "Books")]
     public class Book : BaseEntity
     {
-        [Required]
-        public string? Title { get; set; }
-
-        [ForeignKey("GenreId")]
-        public Genre Genre { get; set; }
-
-        [ForeignKey("GenreId")]
-        public int GenreId { get; set; }
+        public string Title { get; set; }
+        public Author Author { get; set; }
+        public int AuthorId { get; set; }
+        public ICollection<BookGenre> Genres { get; set; }
 
         [DataType(DataType.Currency)]
         [Range(1, 100)]
@@ -26,8 +23,6 @@ namespace BooksAPI.Data.Entities
 
         [DataType(DataType.Date)]
         public DateTime PublishDate { get; set; }
-
         public bool IsDeleted { get; set; }
     }
-
 }
