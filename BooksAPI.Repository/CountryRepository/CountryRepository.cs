@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BooksAPI.Repository.CountryRepositories
+namespace BooksAPI.Repository.CountryRepository
 {
     public class CountryRepository : Repository<Country>, ICountryRepository
     {

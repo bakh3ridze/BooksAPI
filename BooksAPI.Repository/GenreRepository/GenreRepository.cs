@@ -55,18 +55,6 @@ namespace BooksAPI.Repository.GenreRepositories
             return ifSuccesful;
         }
 
-        public async Task<IEnumerable<Genre>> GetGenresByBookId(int Id)
-        {
-            return await _context.Books
-                .Where(x => x.Id == Id)
-                .SelectMany(x => x.Genres.Select(x => x.Genre))
-                .ToListAsync();
-        }
 
-        public async Task AddGenresByBookId(int Id, IEnumerable<int>? Ids)
-        {
-            await Task.Run(() => Ids.ToList().ForEach(async x => await _context.BookGenres.AddAsync(new BookGenre() { BookId = Id, GenreId = x })));
-            await _context.SaveChangesAsync();
-        }
     }
 }

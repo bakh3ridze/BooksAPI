@@ -7,7 +7,7 @@ using BooksAPI.Data.Entities;
 using BooksAPI.Repository.BaseRepository;
 using BooksAPI.Repository.CountryRepository.Commands;
 
-namespace BooksAPI.Repository.CountryRepositories
+namespace BooksAPI.Repository.CountryRepository
 {
     public interface ICountryRepository : IRepository<Country>
     {

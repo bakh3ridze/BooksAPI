@@ -16,5 +16,7 @@ namespace BooksAPI.Repository.BookRepository
         Task<bool> Create(CreateBookCommand command);
         Task<bool> Update(UpdateBookCommand command, int Id);
         Task<DetailedBook> GetDetailedBook(int Id);
+        Task<IEnumerable<Genre>> GetGenresByBookId(int Id);
+        Task AddGenresByBookId(int Id, IEnumerable<int>? Ids);
     }
 }

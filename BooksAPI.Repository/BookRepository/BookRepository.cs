@@ -91,7 +91,7 @@ namespace BooksAPI.Repository.BookRepository
 
             Author author = await _authorRepository.GetById(book.AuthorId);
 
-            List<Genre> genres = (List<Genre>)await _genreRepository.GetGenresByBookId(Id);
+            List<Genre> genres = (List<Genre>)await GetGenresByBookId(Id);
 
             DetailedBook details = new DetailedBook()
             {
@@ -100,9 +100,23 @@ namespace BooksAPI.Repository.BookRepository
                 Title = book.Title,
                 PublishDate = book.PublishDate,
                 Author = author,
-                Genres = genres
+                Genres = genres,
+                Id = book.Id
             };
             return details;
+        }
+        public async Task<IEnumerable<Genre>> GetGenresByBookId(int Id)
+        {
+            return await _context.Books
+                .Where(x => x.Id == Id)
+                .SelectMany(x => x.Genres.Select(x => x.Genre))
+                .ToListAsync();
+        }
+
+        public async Task AddGenresByBookId(int Id, IEnumerable<int>? Ids)
+        {
+            await Task.Run(() => Ids.ToList().ForEach(async x => await _context.BookGenres.AddAsync(new BookGenre() { BookId = Id, GenreId = x })));
+            await _context.SaveChangesAsync();
         }
     }
 }

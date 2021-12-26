@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BooksAPI.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,8 @@ namespace BooksAPI.Repository.Models
 {
     public class DetailedAuthor
     {
-        
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public Country Country { get; set; }
     }
 }

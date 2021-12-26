@@ -1,0 +1,50 @@
+﻿@page "/authors"
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.AuthorHttpClient
+@inject IAuthorHttpClient _author_client
+@inject NavigationManager _navigator
+
+<PageTitle>Authors</PageTitle>
+
+<h3>Authors</h3>
+
+@if (detailed_authors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" 
+        FilterMode="FilterMode.Simple" AllowPaging="true" AllowSorting="true" Data="@detailed_authors" TItem="DetailedAuthor"
+        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or">
+        <Columns>
+            <RadzenDataGridColumn TItem="DetailedAuthor" Property="Name" Title="First Name"/>
+            <RadzenDataGridColumn TItem="DetailedAuthor" Property="Country.Name" Title="Last Name"/>
+            <RadzenDataGridColumn Width="80px" Frozen="true" TItem="DetailedAuthor" Property="OrderID" Sortable="false" TextAlign="TextAlign.Center">
+                <Template Context="data">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Click=@(() => RedirectToEdit(data.Id)) Icon="edit" Class="m-1" Text="" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}
+
+@code {
+    IEnumerable<DetailedAuthor> detailed_authors = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        detailed_authors = await _author_client.GetAllDetailed();
+    }
+
+    protected async Task Remove(int Id)
+    {
+        await _author_client.RemoveById(Id);
+        detailed_authors = await _author_client.GetAllDetailed();
+    }
+
+    protected void RedirectToEdit(int Id)
+    {
+        _navigator.NavigateTo($"editauthor/{Id}");
+    }
+}

@@ -1,0 +1,88 @@
+﻿@page "/editauthor/{Id}"
+@using BooksAPI.Data.Entities
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.AuthorHttpClient
+@using BooksAPI.SDK2.CountryHttpClient
+@using BooksAPI.Repository.AuthorRepository.Commands
+@inject IAuthorHttpClient _author_client
+@inject ICountryHttpClient _country_client
+@inject NavigationManager _navigator
+
+<PageTitle>Edit Author</PageTitle>
+
+<h3>Edit Author</h3>
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+@if (countries == null && detailed_authors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else{
+<div class="row">
+<RadzenTemplateForm Data="@command">
+    <div class="col-md-6">
+        <RadzenFieldset Text="Author">
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Name" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" Name="CardNr" @bind-Value="command.Name"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Country" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDropDown @bind-Value="command.CountryId" AllowClear="true" Placeholder="Select something" Data="@countries" style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="CardId">
+                    </RadzenDropDown>
+                </div>
+            </div>
+        </RadzenFieldset>
+        <div class="row justify-content-center">
+            <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                <RadzenButton ButtonStyle="ButtonStyle.Success" Style="margin-right: 16px;" Icon="save" Text="Save" Click="@UpdateAuthor" />
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Text="Delete" Click="@Remove" />
+            </div>
+        </div>
+    </div>
+</RadzenTemplateForm>
+</div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    protected CreateAuthorCommand command = new CreateAuthorCommand();
+
+    DetailedAuthor detailed_authors = null;
+
+    IEnumerable<Country> countries = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        detailed_authors = await _author_client.GetDetailedById(int.Parse(Id));
+        command.Name = detailed_authors.Name;
+        command.CountryId = detailed_authors.Country.Id;
+        countries = await _country_client.GetAll();
+    }
+
+    protected async Task Remove()
+    {
+        await _author_client.RemoveById(int.Parse(Id));
+        _navigator.NavigateTo("/authors");
+    }
+
+    protected async Task UpdateAuthor()
+    {
+        await _author_client.Update(int.Parse(Id), new UpdateAuthorCommand() { CountryId = command.CountryId, Name = command.Name });
+        _navigator.NavigateTo("/authors");
+    }
+}

@@ -1,0 +1,10 @@
+﻿@page "/author/{Id}"
+
+<h3>Author</h3>
+
+<h1>@Id</h1>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+}
