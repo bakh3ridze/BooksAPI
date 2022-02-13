@@ -13,10 +13,12 @@ namespace BooksAPI.Repository.BookRepository
 {
     public interface IBookRepository : IRepository<Book>
     {
+        Task<IEnumerable<Book>> GetAll();
         Task<bool> Create(CreateBookCommand command);
         Task<bool> Update(UpdateBookCommand command, int Id);
-        Task<DetailedBook> GetDetailedBook(int Id);
-        Task<IEnumerable<Genre>> GetGenresByBookId(int Id);
-        Task AddGenresByBookId(int Id, IEnumerable<int>? Ids);
+        Task<IEnumerable<DetailedBook>> GetAllDetailed();
+        Task<IEnumerable<DetailedBook>> GetAllNotDeletedDetaileds();
+        Task<DetailedBook> GetDetailedById(int Id);
+        Task<IEnumerable<DetailedBook>> GetDetailedsByAuthorId(int Id);
     }
 }

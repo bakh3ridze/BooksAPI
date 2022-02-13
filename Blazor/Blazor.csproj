@@ -7,9 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.3" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.3" />
-    <PackageReference Include="Radzen.Blazor" Version="3.13.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.1" />
+    <PackageReference Include="MudBlazor" Version="6.0.4" />
+    <PackageReference Include="Radzen.Blazor" Version="3.14.0" />
   </ItemGroup>
 
   <ItemGroup>

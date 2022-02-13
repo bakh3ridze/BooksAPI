@@ -1,0 +1,109 @@
+﻿@page "/addbook"
+@using BooksAPI.Data.Entities
+@using BooksAPI.Repository.BookRepository.Commands
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.AuthorHttpClient
+@using BooksAPI.SDK2.BookHttpClient
+@using BooksAPI.SDK_.GenreHttpClient
+@inject IBookHttpClient _book_client
+@inject IAuthorHttpClient _author_client
+@inject IGenreHttpClient _genre_client
+@inject NavigationManager _navigator
+
+<PageTitle>Add Book</PageTitle>
+
+<h3>Add Book</h3>
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+@if (authors == null && genres == null)
+{
+    <p><em>Loading...</em></p>
+}
+else{
+    <div class="row">
+    <RadzenTemplateForm Data="@command" TItem="CreateBookCommand" Submit="CreateBook">
+        <div class="col-md-6">
+            <RadzenFieldset Text="Add Book">
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Title" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox style="width: 100%;" Name="Title" @bind-Value="command.Title"/>
+                        <p><RadzenRequiredValidator Component="Title" Text="Field Is Required" Style="position: absolute" /></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Publish Date" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDatePicker style="width: 100%;" Name="PublishDate" @bind-Value="command.PublishDate"/>
+                        <p><RadzenRequiredValidator Component="PublishDate" Text="Field Is Required" Style="position: absolute" /></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Price" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenNumeric style="width: 100%;" Name="Price" @bind-Value="command.Price"/>
+                        <p><RadzenRequiredValidator Component="Price" Text="Field Is Required" Style="position: absolute" /></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Genres" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDown @bind-Value="command.GenreIds" Multiple="true" AllowClear="true" Placeholder="Select Genres" Data="@genres" style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="Genres">
+                        </RadzenDropDown>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Author" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDown @bind-Value="command.AuthorId" Data="@authors" style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="Author">
+                        </RadzenDropDown>
+                        <p><RadzenRequiredValidator DefaultValue="0" Component="Author" Text="Field Is Required" Style="position: absolute" /></p>
+                    </div>
+                </div>
+            </RadzenFieldset>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Style="margin-right: 16px;" Icon="save" Text="Save" ButtonType="Radzen.ButtonType.Submit"/>
+                </div>
+            </div>
+        </div>
+    </RadzenTemplateForm>
+    </div>
+}
+
+@code {
+
+    private CreateBookCommand command = new CreateBookCommand();
+
+    private IEnumerable<Author> authors = null;
+
+    private IEnumerable<Genre> genres = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        authors = await _author_client.GetAll();
+        genres = await _genre_client.GetAll();
+    }
+
+    private async Task CreateBook()
+    {
+        command.IsDeleted = false;
+        await _book_client.Create(command);
+        _navigator.NavigateTo("/");
+    }
+}

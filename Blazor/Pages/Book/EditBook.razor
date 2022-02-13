@@ -1,0 +1,133 @@
+﻿@page "/editbook/{Id:int}"
+@using BooksAPI.Data.Entities
+@using BooksAPI.Repository.BookRepository.Commands
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.AuthorHttpClient
+@using BooksAPI.SDK2.BookHttpClient
+@using BooksAPI.SDK_.GenreHttpClient
+@inject IBookHttpClient _book_client
+@inject IAuthorHttpClient _author_client
+@inject IGenreHttpClient _genre_client
+@inject NavigationManager _navigator
+
+<PageTitle>Edit Book</PageTitle>
+
+<h3>Edit Book</h3>
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+@if (authors == null && detailed_book == null)
+{
+    <p><em>Loading...</em></p>
+}
+else{
+    <div class="row">
+    <RadzenTemplateForm Data="@command" Submit="UpdateBook" TItem="UpdateBookCommand">
+        <div class="col-md-6 ">
+            <RadzenFieldset Text="Edit Book">
+                <div class="row">
+                    <div class="col-md-4">
+                        <RadzenLabel Text="Title" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox style="width: 100%;" Name="Title" @bind-Value="command.Title"/>
+                        <p><RadzenRequiredValidator Component="Title" Text="Field Is Required" Style="position: absolute" /></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Publish Date" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDatePicker style="width: 100%;" Name="PublishDate" @bind-Value="command.PublishDate"/>
+                        <p><RadzenRequiredValidator Component="PublishDate" Text="Field Is Required" Style="position: absolute" /></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Price" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenNumeric style="width: 100%;" Name="Price" @bind-Value="command.Price"/>
+                        <p><RadzenRequiredValidator Component="Price" Text="Field Is Required" Style="position: absolute" /></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Genres" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDown @bind-Value="command.GenreIds" Multiple="true" AllowClear="true" Placeholder="Select something" Data="@genres" style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="Genres">
+                        </RadzenDropDown>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Is Deleted" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenSwitch @bind-Value="command.IsDeleted"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Author" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDown @bind-Value="command.AuthorId" Data="@authors" style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="Author">
+                        </RadzenDropDown>
+                    </div>
+                </div>
+            </RadzenFieldset>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Style="margin-right: 16px;" Icon="save" Text="Save" ButtonType="Radzen.ButtonType.Submit"/>
+                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Text="Delete" Click="RemoveBook"/>
+               </div>
+            </div>
+        </div>
+    </RadzenTemplateForm>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public UpdateBookCommand command = new UpdateBookCommand();
+
+    protected DetailedBook detailed_book = null;
+
+    protected IEnumerable<Author> authors = null;
+
+    protected IEnumerable<Genre> genres = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        detailed_book = await _book_client.GetDetailedById(Id);
+        command.Title = detailed_book.Title;
+        command.AuthorId = detailed_book.AuthorId;
+        command.GenreIds = detailed_book.Genres.Select(x => x.Id);
+        command.Price = detailed_book.Price;
+        command.PublishDate = detailed_book.PublishDate;
+        command.IsDeleted = detailed_book.IsDeleted;
+        authors = await _author_client.GetAll();
+        genres = await _genre_client.GetAll();
+    }
+
+    private async Task RemoveBook()
+    {
+        await _book_client.RemoveById(Id);
+        _navigator.NavigateTo("/");
+    }
+
+    private async Task UpdateBook()
+    {
+        await _book_client.Update(Id, command);
+        _navigator.NavigateTo("/");
+    }
+}

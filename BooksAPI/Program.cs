@@ -1,25 +1,24 @@
+using BooksAPI;
 using BooksAPI.Data;
+using BooksAPI.Data.Entities;
 using BooksAPI.Repository.AuthorRepository;
+using BooksAPI.Repository.AuthRepository;
 using BooksAPI.Repository.BaseRepository;
 using BooksAPI.Repository.BookRepository;
 using BooksAPI.Repository.CountryRepository;
 using BooksAPI.Repository.GenreRepositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Net.Http.Headers;
+using System.Text;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("CorsPolicy",
-    builder =>
-    builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
-});
 
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
@@ -34,10 +33,7 @@ builder.Services.AddScoped(typeof(IGenreRepository), typeof(GenreRepository));
 builder.Services.AddScoped(typeof(IBookRepository), typeof(BookRepository));
 builder.Services.AddScoped(typeof(ICountryRepository), typeof(CountryRepository));
 builder.Services.AddScoped(typeof(IAuthorRepository), typeof(AuthorRepository));
-
 var app = builder.Build();
-
-app.UseCors("CorsPolicy");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -47,6 +43,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseDeveloperExceptionPage();
 
 app.UseAuthorization();
 

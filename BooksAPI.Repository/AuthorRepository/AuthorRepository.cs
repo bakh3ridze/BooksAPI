@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
+using BooksAPI.Repository.BookRepository;
 
 namespace BooksAPI.Repository.AuthorRepository
 {
@@ -18,11 +19,13 @@ namespace BooksAPI.Repository.AuthorRepository
     {
         private readonly IRepository<Author> _author_repository;
         private readonly ICountryRepository _country_repository;
+        private readonly IBookRepository _book_repository;
 
-        public AuthorRepository(BookContext context, IRepository<Author> author_repository, ICountryRepository country_repository) : base(context)
+        public AuthorRepository(BookContext context, IRepository<Author> author_repository, ICountryRepository country_repository, IBookRepository book_repository) : base(context)
         {
             _author_repository = author_repository;
             _country_repository = country_repository;
+            _book_repository = book_repository;
         }
         public async Task<bool> Create(CreateAuthorCommand command)
         {
@@ -44,29 +47,22 @@ namespace BooksAPI.Repository.AuthorRepository
 
         public async Task<IEnumerable<DetailedAuthor>> GetAllDetailed()
         {
-            List<int> Ids = await _context.Authors.Select(x => x.Id).ToListAsync();
-            List<DetailedAuthor> detailedAuthors = new List<DetailedAuthor>();
-            foreach (var item in Ids)
+            return await Task.Run(() => _entities.Select(x => new DetailedAuthor()
             {
-                detailedAuthors.Add(await GetDetailedById(item));
-            }
-
-            return detailedAuthors;
+                Id = x.Id,
+                Name = x.Name,
+                Country = x.Country
+            }));
         }
 
         public async Task<DetailedAuthor> GetDetailedById(int Id)
         {
-            Author author = await _author_repository.GetById(Id);
-            Country authorCountry = await _country_repository.GetById(author.CountryId);
-
-            DetailedAuthor detailed = new DetailedAuthor()
+            return await Task.Run(() => _entities.Where(x => x.Id == Id).Select(x => new DetailedAuthor()
             {
-                Country = authorCountry,
-                Name = author.Name,
-                Id = author.Id
-            };
-
-            return detailed;
+                Id = x.Id,
+                Name = x.Name,
+                Country = x.Country
+            }).SingleOrDefault());
         }
 
         public async Task<bool> Update(UpdateAuthorCommand command, int Id)

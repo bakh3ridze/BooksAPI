@@ -14,6 +14,6 @@ namespace BooksAPI.Data.Entities
     {
         public string Name { get; set; }
 
-        public ICollection<BookGenre> Books { get; set; }
+        public IEnumerable<BookGenre> Books { get; set; }
     }
 }

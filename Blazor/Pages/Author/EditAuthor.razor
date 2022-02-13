@@ -1,0 +1,89 @@
+﻿@page "/editauthor/{Id:int}"
+@using BooksAPI.Data.Entities
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.AuthorHttpClient
+@using BooksAPI.SDK2.CountryHttpClient
+@using BooksAPI.Repository.AuthorRepository.Commands
+@inject IAuthorHttpClient _author_client
+@inject ICountryHttpClient _country_client
+@inject NavigationManager _navigator
+
+<PageTitle>Edit Author</PageTitle>
+
+<h3>Edit Author</h3>
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+@if (countries == null && detailed_authors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else{
+    <div class="row">
+    <RadzenTemplateForm Data="@command" Submit="UpdateAuthor" TItem="UpdateAuthorCommand">
+        <div class="col-md-6">
+            <RadzenFieldset Text="Edit Author">
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Name" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox style="width: 100%;" Name="Name" @bind-Value="command.Name"/>
+                        <p><RadzenRequiredValidator Component="Name" Text="Field is Required" Style="position: absolute" /></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Country" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDown @bind-Value="command.CountryId" Placeholder="Select something" Data="@countries" style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="Country">
+                        </RadzenDropDown>
+                    </div>
+                </div>
+            </RadzenFieldset>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" ButtonType="Radzen.ButtonType.Submit" Style="margin-right: 16px;" Icon="save" Text="Save"/>
+                    <RadzenButton ButtonStyle="ButtonStyle.Danger" ButtonType="Radzen.ButtonType.Button" Style="margin-right: 16px;" Icon="delete" Text="Delete" Click="RemoveAuthor"/>
+                </div>
+            </div>
+        </div>
+    </RadzenTemplateForm>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private UpdateAuthorCommand command = new UpdateAuthorCommand();
+
+    private DetailedAuthor detailed_authors = null;
+
+    private IEnumerable<Country> countries = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        detailed_authors = await _author_client.GetDetailedById(Id);
+        command.Name = detailed_authors.Name;
+        command.CountryId = detailed_authors.Country.Id;
+        countries = await _country_client.GetAll();
+    }
+
+    private async Task RemoveAuthor()
+    {
+        await _author_client.RemoveById(Id);
+        _navigator.NavigateTo("/authors");
+    }
+
+    private async Task UpdateAuthor()
+    {
+        await _author_client.Update(Id, command);
+        _navigator.NavigateTo("/authors");
+    }
+}

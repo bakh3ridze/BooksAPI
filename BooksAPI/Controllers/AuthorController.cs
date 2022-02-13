@@ -2,6 +2,7 @@
 using BooksAPI.Repository.AuthorRepository;
 using BooksAPI.Repository.AuthorRepository.Commands;
 using BooksAPI.Repository.GenreRepositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

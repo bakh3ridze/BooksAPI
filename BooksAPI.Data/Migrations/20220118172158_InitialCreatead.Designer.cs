@@ -4,6 +4,7 @@ using BooksAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BooksAPI.Data.Migrations
 {
     [DbContext(typeof(BookContext))]
-    partial class BookContextModelSnapshot : ModelSnapshot
+    [Migration("20220118172158_InitialCreatead")]
+    partial class InitialCreatead
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,12 +236,12 @@ namespace BooksAPI.Data.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ef744a65-28ca-44b7-be2c-5c7e475517fb",
+                            ConcurrencyStamp = "aa838aec-4191-44cd-b224-8fd28a4c43e2",
                             Email = "patrick@fakemail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "PATRICK",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJSEV9A6ZDJ9UPc+VnDw2ly+2YGu6zyYO0+BgJUa9NCva7ujm6PqxLHhwxWWNFKaLQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFYhjeB0l+rxFUHTijUTwyatW+6of3hTu2ZybAQ+fQi8epnDoZBfvCGUPDCbK+Klvw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "patrick"
@@ -248,12 +250,12 @@ namespace BooksAPI.Data.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "37f0bacf-9de7-41c7-a5ad-48dd9dca5321",
+                            ConcurrencyStamp = "fb3df983-c61e-4e51-90b9-636731e7b5b1",
                             Email = "mike@fakemail.Com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "MIKE",
-                            PasswordHash = "AQAAAAEAACcQAAAAEMWXYPuefdElt3xPW06JnySx4W6Tx/82o1LuKpg74AFVFG51bGFQKUPAfnqIFvOyOQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAELTQbsNi+rajb4B8t82zYgkNBtti/WOd3l9q9CcCaPzXSD74Ono6IM/Gc5Ekvl3bzQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "mike"

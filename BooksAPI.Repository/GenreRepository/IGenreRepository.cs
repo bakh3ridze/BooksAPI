@@ -13,5 +13,6 @@ namespace BooksAPI.Repository.GenreRepositories
     {
         Task<bool> Create(CreateGenreCommand command);
         Task<bool> Update(UpdateGenreCommand command, int Id);
+        Task UpdateBookGenres(int Id, IEnumerable<int> genres);
     }
 }

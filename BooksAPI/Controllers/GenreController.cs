@@ -68,26 +68,5 @@ namespace BooksAPI.Controllers
                 return StatusCode(500);
             return Ok();
         }
-
-        [HttpGet("GetGenresByBookId/{Id}")]
-        public async Task<ActionResult> GetGenresByBookId(int Id)
-        {
-            Book? genre = await _bookRepository.GetById(Id);
-            if (genre == null)
-                return NotFound();
-            return Ok(await _bookRepository.GetGenresByBookId(Id));
-        }
-
-        [HttpPost("AddGenresByBookId")]
-        public async Task<ActionResult> AddGenresByBookId(int Id, IEnumerable<int>? Ids)
-        {
-            Book? genre = await _bookRepository.GetById(Id);
-            if (genre == null)
-                return NotFound();
-
-            await _bookRepository.AddGenresByBookId(Id, Ids);
-
-            return Ok();
-        }
     }
 }

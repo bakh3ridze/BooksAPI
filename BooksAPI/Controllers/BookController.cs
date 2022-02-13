@@ -62,7 +62,7 @@ namespace BooksAPI.Controllers
                 return StatusCode(500);
         }
 
-        [HttpDelete("{Id}")]
+        [HttpDelete("Delete/{Id}")]
         public async Task<ActionResult> Delete(int Id)
         {
             Book ifExists = await _bookRepository.GetById(Id);
@@ -73,28 +73,35 @@ namespace BooksAPI.Controllers
                 return Ok();
             return StatusCode(500);
         }
-        [HttpGet("DetailedBook/{Id}")]
-        public async Task<ActionResult> DetailedBook(int Id)
+        [HttpGet("Detailed/{Id}")]
+        public async Task<ActionResult> Detailed(int Id)
         {
             Book ifExists = await _bookRepository.GetById(Id);
             if (ifExists == null)
                 return NotFound();
-            DetailedBook details = await _bookRepository.GetDetailedBook(Id);
+            DetailedBook details = await _bookRepository.GetDetailedById(Id);
             if (details != null)
                 return Ok(details);
             else
                 return NotFound();
         }
 
-        [HttpGet("GetAllDetailedBook")]
-        public async Task<ActionResult> GetAllDetailedBook()
+        [HttpGet("GetAllDetailed")]
+        public async Task<ActionResult> GetAllDetailed()
         {
-            List<DetailedBook> result = new List<DetailedBook>();
-            foreach (var item in await _bookRepository.GetAll())
-            {
-                result.Add(await _bookRepository.GetDetailedBook(item.Id));
-            }
-            return Ok(result);
+            return Ok(await _bookRepository.GetAllDetailed());
+        }
+
+        [HttpGet("GetAllNotDeletedDetaileds")]
+        public async Task<ActionResult> GetAllNotDeletedDetaileds()
+        {
+            return Ok(await _bookRepository.GetAllNotDeletedDetaileds());
+        }
+
+        [HttpGet("GetDetailedsByAuthorId/{Id}")]
+        public async Task<ActionResult> GetDetailedsByAuthorId(int Id)
+        {
+            return Ok(await _bookRepository.GetDetailedsByAuthorId(Id));
         }
     }
 }

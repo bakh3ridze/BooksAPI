@@ -11,6 +11,7 @@ namespace BooksAPI.SDK2.AuthorHttpClient
 {
     public interface IAuthorHttpClient
     {
+        Task<IEnumerable<Author>> GetAll();
         Task<IEnumerable<DetailedAuthor>> GetAllDetailed();
         Task<DetailedAuthor> GetDetailedById(int Id);
         Task Create(CreateAuthorCommand command);

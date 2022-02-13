@@ -18,6 +18,11 @@ namespace BooksAPI.SDK2.AuthorHttpClient
         {
             _httpClient = clientFactory.CreateClient("BookHttpClient");
         }
+        public async Task<IEnumerable<Author>> GetAll()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<Author>>(_httpClient.BaseAddress + "/Author/GetAll");
+        }
+
         public async Task<IEnumerable<DetailedAuthor>> GetAllDetailed()
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<DetailedAuthor>>(_httpClient.BaseAddress + "/Author/GetAllDetailed");

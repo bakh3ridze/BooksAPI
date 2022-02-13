@@ -1,0 +1,54 @@
+﻿@page "/AuthorBooks/{Id:int}"
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.AuthorHttpClient
+@using BooksAPI.SDK2.BookHttpClient
+@inject IBookHttpClient book_client
+@inject IAuthorHttpClient author_client
+
+<PageTitle>Author Books</PageTitle>
+
+<h3>Author Books</h3>
+
+@if(detailed_author != null)
+{
+    <h3>@detailed_author.Name's Books</h3>
+}
+
+@if (detailed_books == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenGrid AllowFiltering="false" AllowColumnResize="true" 
+        FilterMode="FilterMode.Simple" AllowPaging="true" AllowSorting="true" Data="@detailed_books" TItem="DetailedBook"
+        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or">
+        <Columns>
+            <RadzenGridColumn TItem="DetailedBook" Property="Title" Title="Title"/>
+            <RadzenGridColumn TItem="DetailedBook" Property="Author.Name" Title="Author"/>
+            <RadzenGridColumn TItem="DetailedBook" Property="PublishDate" Title="Publish Date"/>
+            <RadzenGridColumn TItem="DetailedBook" Property="IsDeleted" Title="Is Deleted"/>
+            <RadzenGridColumn TItem="DetailedBook" Property="Price" Title="Price"/>
+            <RadzenGridColumn TItem="DetailedBook" Property="Genres" Title="Genres" Type="typeoff(IEnumerable<Genre>)">
+                <Template Context="genres">
+                    <a>@string.Join(", ", genres.Genres.Select(x => x.Name))</a>
+                </Template>
+            </RadzenGridColumn>
+        </Columns>
+    </RadzenGrid>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private DetailedAuthor detailed_author = null;
+
+    private IEnumerable<DetailedBook> detailed_books = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        detailed_author = await author_client.GetDetailedById(Id);
+        detailed_books = await book_client.GetDetailedsByAuthorId(Id);
+    }
+}

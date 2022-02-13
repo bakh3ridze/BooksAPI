@@ -1,0 +1,90 @@
+﻿@page "/book/{Id:int}"
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.BookHttpClient
+@inject IBookHttpClient _book_client
+@inject NavigationManager _navigator
+
+<h3>Book</h3>
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+@if (detailed_book == null)
+{
+    <p><em>Loading...</em></p>
+}
+else{
+    <div class="row">
+    <RadzenTemplateForm Data="@detailed_book" TItem="DetailedBook">
+        <div class="col-md-6">
+            <RadzenFieldset Text="Book">
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Title"/>
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenLabel Text="@detailed_book.Title"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Publish Date" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenLabel Text="@detailed_book.PublishDate.ToShortDateString()"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Price" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenLabel Text="@detailed_book.Price.ToString()"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Genres" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenLabel Text="@string.Join(" ", detailed_book.Genres.Select(x => x.Name))"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Author" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenLabel Text="@detailed_book.Author.Name"/>
+                    </div>
+                </div>
+            </RadzenFieldset>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Style="margin-right: 16px;" Icon="edit" Text="Edit" ButtonType="Radzen.ButtonType.Button" Click="RedirectToBookEditPage"/>
+                </div>
+            </div>
+        </div>
+    </RadzenTemplateForm>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private DetailedBook detailed_book;
+
+    protected override async Task OnInitializedAsync()
+    {
+        detailed_book = await _book_client.GetDetailedById(Id);
+    }
+
+    private void RedirectToBookEditPage()
+    {
+        _navigator.NavigateTo($"editbook/{Id}");
+    }
+}

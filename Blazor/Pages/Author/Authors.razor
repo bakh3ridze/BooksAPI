@@ -1,0 +1,41 @@
+﻿@page "/authors"
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.AuthorHttpClient
+@inject IAuthorHttpClient _author_client
+@inject NavigationManager _navigator
+
+<PageTitle>Authors</PageTitle>
+
+<h3>Authors</h3>
+
+@if (detailed_authors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <MudTable Items="@detailed_authors" Hover="true" Dense="true" T="DetailedAuthor" OnRowClick="RedirectToAuthorPage" LoadingProgressColor="Color.Error" Virtualize="true">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Country</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Country">@context.Country.Name</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+@code {
+    private IEnumerable<DetailedAuthor> detailed_authors = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        detailed_authors = await _author_client.GetAllDetailed();
+    }
+
+    private void RedirectToAuthorPage(TableRowClickEventArgs<DetailedAuthor> p)
+    {
+        _navigator.NavigateTo($"author/{p.Item.Id}");
+    }
+}

@@ -1,0 +1,14 @@
+﻿using BooksAPI.Repository.AuthRepository.Commands;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BooksAPI.SDK_.AuthHttpClient
+{
+    public interface IAuthHttpClient
+    {
+        Task<string> Authenticate(AuthCommand command);
+    }
+}

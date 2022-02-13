@@ -13,6 +13,7 @@ namespace BooksAPI.Repository.Models
         public string Title { get; set; }
         public IEnumerable<Genre> Genres { get; set; }
         public Author Author { get; set; }
+        public int AuthorId { get; set; }
         public decimal Price { get; set; }
         public DateTime PublishDate { get; set; }
         public bool IsDeleted { get; set; }

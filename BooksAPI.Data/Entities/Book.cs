@@ -15,7 +15,7 @@ namespace BooksAPI.Data.Entities
         public string Title { get; set; }
         public Author Author { get; set; }
         public int AuthorId { get; set; }
-        public ICollection<BookGenre> Genres { get; set; }
+        public IEnumerable<BookGenre> Genres { get; set; }
 
         [DataType(DataType.Currency)]
         [Range(1, 100)]

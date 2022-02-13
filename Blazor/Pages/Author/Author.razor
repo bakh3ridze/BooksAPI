@@ -1,0 +1,66 @@
+﻿@page "/author/{Id:int}"
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.AuthorHttpClient
+@inject IAuthorHttpClient _author_client
+@inject NavigationManager _navigator
+
+<h3>Author</h3>
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+@if (detailed_author == null)
+{
+    <p><em>Loading...</em></p>
+}
+else{
+    <div class="row">
+    <RadzenTemplateForm Data="@detailed_author" TItem="DetailedAuthor">
+        <div class="col-md-6">
+            <RadzenFieldset Text="Author">
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Name"/>
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenLabel Text="@detailed_author.Name"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Country" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenLabel Text="@detailed_author.Country.Name"/>
+                    </div>
+                </div>
+            </RadzenFieldset>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Style="margin-right: 16px;" Icon="edit" Text="Edit" ButtonType="Radzen.ButtonType.Button" Click="RedirectToAuthorEditPage"/>
+                </div>
+            </div>
+        </div>
+    </RadzenTemplateForm>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private DetailedAuthor detailed_author;
+
+    protected override async Task OnInitializedAsync()
+    {
+        detailed_author = await _author_client.GetDetailedById(Id);
+    }
+
+    private void RedirectToAuthorEditPage()
+    {
+        _navigator.NavigateTo($"editauthor/{Id}");
+    }
+}

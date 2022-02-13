@@ -1,0 +1,51 @@
+﻿@page "/ethnics"
+
+<h3>Ethnics</h3>
+
+<div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-lg-6 offset-lg-3 my-5">
+            <RadzenChart Style="height: 600px; width: 600px">
+                <RadzenPieSeries Radius="200" Data="@ethnics" Title="Ethnics" CategoryProperty="Name" ValueProperty="Percent" />
+            </RadzenChart>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    class Ethnic
+    {
+        public string Name { get; set; }
+        public double Percent { get; set; }
+    }
+
+    Ethnic[] ethnics = new Ethnic[] 
+    {
+        new Ethnic
+        {
+            Name = "Georgians",
+            Percent = 87
+        },
+        new Ethnic
+        {
+            Name = "Azeris",
+            Percent = 6.2
+        },
+        new Ethnic
+        {
+            Name = "Armenians",
+            Percent = 4.5
+        },
+        new Ethnic
+        {
+            Name = "Russians",
+            Percent = 0.7
+        },
+        new Ethnic
+        {
+            Name = "Other",
+            Percent = 2.1
+        },
+    };
+}

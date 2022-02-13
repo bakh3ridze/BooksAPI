@@ -49,12 +49,15 @@ namespace BooksAPI.Repository.GenreRepositories
             bool ifSuccesful = await _genreRepository
                 .Update
                 (
-                 new Genre() { Name = command.Name, Id = Id },
+                 new Genre() { Name = command.Name, Id = Id, },
                 Id
                 );
             return ifSuccesful;
         }
 
-
+        public Task UpdateBookGenres(int Id, IEnumerable<int> genres)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

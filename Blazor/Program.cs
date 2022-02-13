@@ -1,10 +1,16 @@
 using Blazor.Data;
+using BooksAPI.SDK_.AuthHttpClient;
+using BooksAPI.SDK_.GenreHttpClient;
 using BooksAPI.SDK2.AuthorHttpClient;
 using BooksAPI.SDK2.BookHttpClient;
 using BooksAPI.SDK2.CountryHttpClient;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.IdentityModel.Tokens;
+using MudBlazor.Services;
 using Radzen;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,11 +27,9 @@ builder.Services.AddHttpClient("BookHttpClient", client =>
 builder.Services.AddScoped<IAuthorHttpClient, AuthorHttpClient>();
 builder.Services.AddScoped<ICountryHttpClient, CountryHttpClient>();
 builder.Services.AddScoped<IBookHttpClient, BookHttpClient>();
+builder.Services.AddScoped<IGenreHttpClient, GenreHttpClient>();
 
-builder.Services.AddScoped<DialogService>();
-builder.Services.AddScoped<NotificationService>();
-builder.Services.AddScoped<TooltipService>();
-builder.Services.AddScoped<ContextMenuService>();
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 

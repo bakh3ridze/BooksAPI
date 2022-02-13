@@ -1,0 +1,49 @@
+﻿@page "/"
+@using BooksAPI.Data.Entities
+@using BooksAPI.Repository.Models
+@using BooksAPI.SDK2.BookHttpClient
+@using MudBlazor
+@inject IBookHttpClient _book_client
+@inject NavigationManager _navigator
+
+<PageTitle>Index</PageTitle>
+
+<h3>Books</h3>
+
+@if (detailed_books == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <MudTable Items="@detailed_books" Dense="true" T="DetailedBook" OnRowClick="@RedirectToBookPage" Hover="true" LoadingProgressColor="Color.Error" Virtualize="true">
+        <HeaderContent>
+            <MudTh>Title</MudTh>
+            <MudTh>Author</MudTh>
+            <MudTh>Publish Date</MudTh>
+            <MudTh>Genres</MudTh>
+            <MudTh>Price</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Title">@context.Title</MudTd>
+            <MudTd DataLabel="Author">@context.Author.Name</MudTd>
+            <MudTd DataLabel="PublishDate">@context.PublishDate</MudTd>
+            <MudTd DataLabel="Genres">@string.Join(" ", context.Genres.Select(x => x.Name))</MudTd>
+            <MudTd DataLabel="Price">@context.Price</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+@code{
+    IEnumerable<DetailedBook> detailed_books = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        detailed_books = await _book_client.GetAllNotDeletedDetaileds();
+    }
+
+    protected void RedirectToBookPage(TableRowClickEventArgs<DetailedBook> p)
+    {
+        _navigator.NavigateTo($"book/{p.Item.Id}");
+    }
+}

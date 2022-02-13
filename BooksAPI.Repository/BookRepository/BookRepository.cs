@@ -35,12 +35,6 @@ namespace BooksAPI.Repository.BookRepository
                 throw new Exception("FluentValidationExeption");
             }
 
-            List<BookGenre> genres = new List<BookGenre>();
-            foreach (var item in command.GenreIds)
-            {
-                await Task.Run(() => genres.Add(new BookGenre() { GenreId = item }));
-            }
-
             bool ifSuccesful = await _bookRepository.Insert(
                 new Book
                 {
@@ -49,7 +43,7 @@ namespace BooksAPI.Repository.BookRepository
                     PublishDate = DateTime.Now.Date,
                     Title = command.Title,
                     AuthorId = command.AuthorId,
-                    Genres = genres
+                    Genres = new List<BookGenre>(command.GenreIds.Select(x => new BookGenre() { GenreId = x }))
                 }
                 );
             return ifSuccesful;
@@ -64,59 +58,89 @@ namespace BooksAPI.Repository.BookRepository
                 throw new Exception("FluentValidationExeption");
             }
 
-            List<BookGenre> genres = new List<BookGenre>();
-            foreach (var item in command.GenreIds)
-            {
-                await Task.Run(() => genres.Add(new BookGenre() { GenreId = item }));
-            }
+            await Task.Run(() => _context.BookGenres.RemoveRange(_context.BookGenres.Where(x => x.BookId == Id)));
 
             bool ifSuccesful = await _bookRepository.Update(
                                 new Book
                                 {
                                     IsDeleted = command.IsDeleted,
                                     Price = command.Price,
-                                    PublishDate = DateTime.Now.Date,
+                                    PublishDate = command.PublishDate,
                                     Title = command.Title,
                                     AuthorId = command.AuthorId,
-                                    Genres = genres,
                                     Id = Id
                                 },
                                 Id
                 );
+
+            Book toAddGenres = await _context.Books.SingleOrDefaultAsync(x => x.Id == Id);
+            toAddGenres.Genres = new List<BookGenre>(command.GenreIds.Select(x => new BookGenre() { GenreId = x }));
+            await _context.SaveChangesAsync();
             return ifSuccesful;
         }
-        public async Task<DetailedBook> GetDetailedBook(int Id)
+
+        public async Task<IEnumerable<DetailedBook>> GetAllDetailed()
         {
-            Book book = await _bookRepository.GetById(Id);
-
-            Author author = await _authorRepository.GetById(book.AuthorId);
-
-            List<Genre> genres = (List<Genre>)await GetGenresByBookId(Id);
-
-            DetailedBook details = new DetailedBook()
+            return await Task.Run(() => _entities.Select(x => new DetailedBook()
             {
-                Price = book.Price,
-                IsDeleted = book.IsDeleted,
-                Title = book.Title,
-                PublishDate = book.PublishDate,
-                Author = author,
-                Genres = genres,
-                Id = book.Id
-            };
-            return details;
-        }
-        public async Task<IEnumerable<Genre>> GetGenresByBookId(int Id)
-        {
-            return await _context.Books
-                .Where(x => x.Id == Id)
-                .SelectMany(x => x.Genres.Select(x => x.Genre))
-                .ToListAsync();
+                Id = x.Id,
+                Author = x.Author,
+                AuthorId = x.AuthorId,
+                IsDeleted = x.IsDeleted,
+                Price = x.Price,
+                Title = x.Title,
+                PublishDate = x.PublishDate,
+                Genres = x.Genres
+                    .Select(m => m.Genre)
+            }));
         }
 
-        public async Task AddGenresByBookId(int Id, IEnumerable<int>? Ids)
+        public async Task<IEnumerable<DetailedBook>> GetDetailedsByAuthorId(int Id)
         {
-            await Task.Run(() => Ids.ToList().ForEach(async x => await _context.BookGenres.AddAsync(new BookGenre() { BookId = Id, GenreId = x })));
-            await _context.SaveChangesAsync();
+            return await Task.Run(() => _entities.Where(x => x.AuthorId == Id).Select(x => new DetailedBook()
+            {
+                Id = x.Id,
+                Author = x.Author,
+                AuthorId = x.AuthorId,
+                IsDeleted = x.IsDeleted,
+                Price = x.Price,
+                Title = x.Title,
+                PublishDate = x.PublishDate,
+                Genres = x.Genres
+                    .Select(m => m.Genre)
+            }));
+        }
+
+        public async Task<DetailedBook> GetDetailedById(int Id)
+        {
+            return await Task.Run(() => _entities.Where(x => x.Id == Id).Select(x => new DetailedBook()
+            {
+                Id = x.Id,
+                Author = x.Author,
+                AuthorId = x.AuthorId,
+                IsDeleted = x.IsDeleted,
+                Price = x.Price,
+                Title = x.Title,
+                PublishDate = x.PublishDate,
+                Genres = x.Genres
+                    .Select(m => m.Genre)
+            }).SingleOrDefault());
+        }
+
+        public async Task<IEnumerable<DetailedBook>> GetAllNotDeletedDetaileds()
+        {
+            return await Task.Run(() => _entities.Where(x => x.IsDeleted == false).Select(x => new DetailedBook()
+            {
+                Id = x.Id,
+                Author = x.Author,
+                AuthorId = x.AuthorId,
+                IsDeleted = x.IsDeleted,
+                Price = x.Price,
+                Title = x.Title,
+                PublishDate = x.PublishDate,
+                Genres = x.Genres
+                .Select(m => m.Genre)
+            }));
         }
     }
 }
